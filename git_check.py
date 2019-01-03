@@ -68,7 +68,7 @@ def write_data_html(data_list, name, path):
     message = message+"""</table>
              </br></br>
              <div style="float:right;">
-             <font size="4 style="padding-right:20px" color="#008000">HTC SSD</font>+
+             <font size="4 style="padding-right:20px" color="#008000">SSD</font>
              </div>
              </body>
              </html>"""
