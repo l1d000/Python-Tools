@@ -6,12 +6,16 @@ import os
 import sys
 
 final_git_list = [
-    'local/platform/hardware/qcom/bt',
-    'local/platform/packages/apps/Bluetooth']
+    'sss',
+    'sss',
+    'sss',
+    'sss']
 
 final_manifest_list = [
-    'xxx.xml',
-    'xxx.xml'
+    'sss.xml',
+    'sss.xml',
+    'sss.xml',
+    'sss.xml'
     ]
 
 
@@ -20,11 +24,12 @@ def get_data(path, git_list):
     manifests_subElementObj = []
     if os.path.exists(path+'/.repo/manifests/'):
         for manifest in final_manifest_list:
-            xmlfilepath = os.path.abspath(path+'/.repo/manifests/'+manifest)
-            domobj = xmldom.parse(xmlfilepath)
-            elementobj = domobj.documentElement
-            subElementObj = elementobj.getElementsByTagName("project")
-            manifests_subElementObj.append(subElementObj)
+            if os.path.exists(path+'/.repo/manifests/'+manifest):
+                xmlfilepath = os.path.abspath(path+'/.repo/manifests/'+manifest)
+                domobj = xmldom.parse(xmlfilepath)
+                elementobj = domobj.documentElement
+                subElementObj = elementobj.getElementsByTagName("project")
+                manifests_subElementObj.append(subElementObj)
   
         for git in git_list:
             temp = []
