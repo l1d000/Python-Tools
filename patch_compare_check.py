@@ -100,6 +100,7 @@ def wirte_summary_html(data_list, name, path):
              <table border="1" cellspacing="0">
              <tr bgcolor="#008000">
              <th>Git</th>"""
+    message = message+ """<th align="left" bgcolor="#EE9A00">"""+"Path"+"""</th>"""
     message = message+ """<th align="left" bgcolor="#EE9A00">"""+"p-rel_shep_qct8998.xml"+"""</th>"""
     message = message+ """<th align="left" bgcolor="#EE9A00">"""+"p-rel_shep_qct845.xml"+"""</th>"""
     message = message+ """<th align="left" bgcolor="#EE9A00">"""+"Add Patches"+"""</th>"""
@@ -108,7 +109,7 @@ def wirte_summary_html(data_list, name, path):
         message = message+"""</tr><tr>"""
         for n in data:
             if ".html" in n:
-                message = message+"""<td style="padding-right:20px">"""+"""<p><a href=" """+n+""" ">"""+n+"""</a></p>"""+"""</td>"""
+                message = message+"""<td style="padding-right:20px">"""+"""<p><a href=" """+n+""" ">"""+n.split('/')[-1]+"""</a></p>"""+"""</td>"""
             else:
                 message = message+"""<td style="padding-right:20px">"""+n+"""</td>"""
         message = message+"""</tr>"""
@@ -130,8 +131,9 @@ def compare_git(path1, path2, git_list):
         compare_path2 ="" 
         compare_branch1 = ""
         compare_branch2 = ""
-        compare_link = ""
+        compare_link = "" 
         temp = []
+
         xmlfilepath = os.path.abspath(path1+'/.repo/manifest.xml')
         domobj = xmldom.parse(xmlfilepath)
         elementobj = domobj.documentElement
@@ -140,7 +142,7 @@ def compare_git(path1, path2, git_list):
             if item.getAttribute("name") == git :                        
                 compare_path1 = item.getAttribute("path")
                 compare_branch1 = item.getAttribute("revision")
-
+                
         xmlfilepath = os.path.abspath(path2+'/.repo/manifest.xml')
         domobj = xmldom.parse(xmlfilepath)
         elementobj = domobj.documentElement
@@ -152,23 +154,25 @@ def compare_git(path1, path2, git_list):
 
         if compare_path1 and compare_path2:
              result = get_data(path1+compare_path1, path2+compare_path2)
-             html_name = 'CompareCodebase/compare_'+(path1+compare_path1).split('/')[-3]+'_'+(path1+compare_path1).split('/')[-2]+'_'+(path1+compare_path1).split('/')[-1]
-             write_data_html(result, html_name, path1+compare_path1)
-             compare_link = 'compare_'+(path1+compare_path1).split('/')[-3]+'_'+(path1+compare_path1).split('/')[-2]+'_'+(path1+compare_path1).split('/')[-1]+".html"
+             html_name = 'CompareCodebase/Detail_Links/compare_'+(path1+compare_path1).split('/')[-3]+'_'+(path1+compare_path1).split('/')[-2]+'_'+(path1+compare_path1).split('/')[-1]
+             write_data_html(result, html_name, compare_path1)
+             compare_link = 'Detail_Links/compare_'+(path1+compare_path1).split('/')[-3]+'_'+(path1+compare_path1).split('/')[-2]+'_'+(path1+compare_path1).split('/')[-1]+".html"
+
         if compare_branch1 and compare_branch2:
             temp.append(git)
+            temp.append(compare_path1)
             temp.append(compare_branch1)
             temp.append(compare_branch2)  
             temp.append(str(len(result)))
             temp.append(compare_link)          
             data_list.append(temp)
 
-    wirte_summary_html(data_list, 'CompareCodebase/compare_summary', path1)
+    wirte_summary_html(data_list, 'CompareCodebase/compare_home', path1)
 
 if __name__ == '__main__':
         print("Path1:")
         print(sys.argv[1])
         print("Path2:")
         print(sys.argv[2])
-        os.popen('rm CompareCodebase -rf; mkdir CompareCodebase')
+        os.popen('rm CompareCodebase -rf; mkdir CompareCodebase; mkdir CompareCodebase/Detail_Links')
         compare_git(sys.argv[1], sys.argv[2], final_git_list)
