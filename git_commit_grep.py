@@ -4,7 +4,9 @@ import csv
 import os
 import sys
 import xml.dom.minidom as xmldom
-
+if sys.getdefaultencoding() != 'utf-8':
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
 
 
 def get_data(path, commit_grep, keyword):
@@ -22,12 +24,11 @@ def get_data(path, commit_grep, keyword):
             if keyword in item:
                  temp.insert(0,commit_grep)
                  final.append(temp)
-                 print("temp:"+item) 
+                 print("temp:"+'=='.join(temp))
                  break;
-        
+
     return final
 
-	
 
 def write_data_html(data, name, path ):
     file_name = name+".html"
