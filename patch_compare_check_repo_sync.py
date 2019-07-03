@@ -101,8 +101,8 @@ def wirte_summary_html(data_list, name, path):
              <tr bgcolor="#008000">
              <th>Git</th>"""
     message = message+ """<th align="left" bgcolor="#EE9A00">"""+"Path"+"""</th>"""
-    message = message+ """<th align="left" bgcolor="#EE9A00">"""+"CRC"+"""</th>"""
-    message = message+ """<th align="left" bgcolor="#EE9A00">"""+"Mainline"+"""</th>"""
+    message = message+ """<th align="left" bgcolor="#EE9A00">"""+"p-rel_shep_qct8998.xml"+"""</th>"""
+    message = message+ """<th align="left" bgcolor="#EE9A00">"""+"p-rel_shep_qct845.xml"+"""</th>"""
     message = message+ """<th align="left" bgcolor="#EE9A00">"""+"Add Patches"+"""</th>"""
     message = message+ """<th align="left" bgcolor="#EE9A00">"""+"Link"+"""</th>"""
     for data in data_list:
@@ -169,10 +169,24 @@ def compare_git(path1, path2, git_list):
 
     wirte_summary_html(data_list, 'CompareCodebase/compare_home', path1)
 
+def repo_sync_code(path, git_list):
+    for git in git_list:
+        xmlfilepath = os.path.abspath(path+'/.repo/manifest.xml')
+        domobj = xmldom.parse(xmlfilepath)
+        elementobj = domobj.documentElement
+        subElementObj = elementobj.getElementsByTagName("project")
+        for item in subElementObj:
+            if item.getAttribute("name") == git :                        
+                compare_path = item.getAttribute("path")
+                output=os.popen(' cd %s;repo sync %s ;'%(path,compare_path))
+
+
 if __name__ == '__main__':
         print("Path1:")
         print(sys.argv[1])
         print("Path2:")
         print(sys.argv[2])
         os.popen('rm CompareCodebase -rf; mkdir CompareCodebase; mkdir CompareCodebase/Detail_Links')
+        repo_sync_code(sys.argv[1], final_git_list)
+        repo_sync_code(sys.argv[2], final_git_list)
         compare_git(sys.argv[1], sys.argv[2], final_git_list)
