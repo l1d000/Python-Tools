@@ -13,7 +13,7 @@ if sys.getdefaultencoding() != 'utf-8':
 def get_data(path):
     final = []
 
-    output=os.popen(' cd %s ;git log --author=htc --pretty=format:"%%s == %%ae == %%H == %%cd"'%(path)).read().splitlines()
+    output=os.popen(' cd %s ;git log --author=x-thinks --pretty=format:"%%s == %%ae == %%H == %%cd"'%(path)).read().splitlines()
     for item_list in output:
         temp = []
         item=item_list.split('==')
@@ -30,6 +30,8 @@ def get_data(path):
 
 def write_data_html(data_list, name, path):
     file_name = name+".html"
+    print(path)
+    print(name)
     f = open(file_name,'w')
     message ="""
              <html>
@@ -104,35 +106,57 @@ def review_git(path):
     data_list = []
 
     xmlfilepath = os.path.abspath(path+'/.repo/manifest.xml')
+    path = path+'/'
     domobj = xmldom.parse(xmlfilepath)
     elementobj = domobj.documentElement
+    subElementObj = elementobj.getElementsByTagName("default")
+
+    default_review_branch = "" 
+    for item in subElementObj: 
+        default_review_branch = item.getAttribute("revision")
+
     subElementObj = elementobj.getElementsByTagName("project")
     for item in subElementObj: 
         review_path ="" 
-        review_branch = ""
         review_link = "" 
         git = ""
         temp = []   
         git = item.getAttribute("name")                  
         review_path = item.getAttribute("path")
         review_branch = item.getAttribute("revision")
+        father_path = os.path.dirname(path.rstrip('/'))
 
-        if review_path:
+        if review_path :
              result = get_data(path+review_path)
-             html_name = 'Review/Detail_Links/review_'+(path+review_path).split('/')[-3]+'_'+(path+review_path).split('/')[-2]+'_'+(path+review_path).split('/')[-1]
+             html_name = father_path+'/Review/Detail_Links/review_'+(path+review_path).split('/')[-3]+'_'+(path+review_path).split('/')[-2]+'_'+(path+review_path).split('/')[-1]
              write_data_html(result, html_name, review_path)
              review_link = 'Detail_Links/review_'+(path+review_path).split('/')[-3]+'_'+(path+review_path).split('/')[-2]+'_'+(path+review_path).split('/')[-1]+".html"
 
-        if review_branch :
-            temp.append(git)
-            temp.append(review_path)
-            temp.append(review_branch) 
-            temp.append(str(len(result)))
-            temp.append(review_link)          
-            data_list.append(temp)
+        if review_branch.strip()=="":
+           review_branch = default_review_branch
 
-    wirte_summary_html(data_list, 'Review/review_home', path)
+        if review_branch and len(result) :  #if the manifest didn't set sub  revision, will remove it, the number of patches is not 0
+             temp.append(git)
+             temp.append(review_path)
+             temp.append(review_branch) 
+             temp.append(str(len(result)))
+             temp.append(review_link)         
+             data_list.append(temp)
+
+    wirte_summary_html(data_list, father_path+'/Review/review_home', path)
 
 if __name__ == '__main__':
-        os.popen('rm Review -rf; mkdir Review; mkdir Review/Detail_Links')
-        review_git(sys.argv[1])
+        print(sys.argv[1])
+        if sys.argv[1].endswith('/') :
+            os.popen('cd %s ; rm Review -rf; mkdir Review; mkdir Review/Detail_Links'%(os.path.dirname(sys.argv[1].rstrip('/'))))
+            review_git(sys.argv[1].rstrip('/'))
+        else:
+            os.popen('cd %s ; rm Review -rf; mkdir Review; mkdir Review/Detail_Links'%(os.path.dirname(sys.argv[1])))
+            review_git(sys.argv[1])
+
+
+
+
+
+
+
