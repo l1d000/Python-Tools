@@ -41,10 +41,10 @@ def wirte_summary_html(data_list, name, manifest1, manifest2):
              <tr>
              <th></th>"""
     
-    message = message+ """<th align="center" bgcolor="#EE9A00">"""+"Branch"+"""</th>"""
     message = message+ """<th align="center" bgcolor="#EE9A00">"""+"Path"+"""</th>"""
     message = message+ """<th align="center" bgcolor="#EE9A00">"""+"Branch"+"""</th>"""
     message = message+ """<th align="center" bgcolor="#EE9A00">"""+"Path"+"""</th>"""
+    message = message+ """<th align="center" bgcolor="#EE9A00">"""+"Branch"+"""</th>"""
 
     
 
@@ -96,13 +96,19 @@ def compare_git(manifest1, manifest2, git_list):
 
 #        if compare_branch1 and compare_branch2:
         temp.append(git)
+
+        if compare_path1:
+            temp.append(compare_path1)
+        else:
+            temp.append("N/A")
+
         if compare_branch1:
             temp.append(compare_branch1)
         else:
             temp.append("N/A")
 
-        if compare_path1:
-            temp.append(compare_path1)
+        if compare_path2:
+            temp.append(compare_path2)
         else:
             temp.append("N/A")
 
@@ -111,10 +117,6 @@ def compare_git(manifest1, manifest2, git_list):
         else:
             temp.append("N/A")   
 
-        if compare_path2:
-            temp.append(compare_path2)
-        else:
-            temp.append("N/A")    
         data_list.append(temp)
 
     wirte_summary_html(data_list, 'Manifest_Compare', manifest1.split('/')[-1], manifest2.split('/')[-1])
